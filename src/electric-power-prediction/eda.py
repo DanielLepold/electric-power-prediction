@@ -7,10 +7,11 @@ def analyse_data(folder,input_path):
   logging.info("EDA - Exploratory data analysis started.")
   df = pd.read_excel(input_path)
 
-  logging.info(f"Creating plots before data clearance at: {folder}/Initial/Plots")
+  logging.info(f"Creating plots before data clearance at: "
+               f"{folder}/Initial/Plots")
   pl.create_plots(df, folder+"/Initial")
 
-  tb.create_table(df.describe(), folder, "/description.xlsx")
+  logging.info(f"Description of data: \n{df.describe()}")
 
   logging.info(f"Non unique rows: \n{df.loc[:, ].nunique()}")
 
@@ -43,12 +44,24 @@ def analyse_data(folder,input_path):
   LW = Q1 - 1.5 * IQR
   logging.info(f"LW, Lower whisker end: \n{LW}")
 
+  logging.info(f"UW-LW, Upper-Lower whisker ends: \n{[UW,LW]}")
+
   logging.info("Removing outliers from dataset.")
   df = df[~((df < LW) | (df > UW)).any(axis=1)]
+
+  logging.info(f"Data Framework shape: \n{df.shape}")
 
   logging.info(f"Creating plots after data clearance at: {folder}/Plots")
   pl.create_plots(df, folder)
 
+  logging.info(f"Description of cleared data: \n{df.describe()}")
+  tb.create_table(df.describe(), folder, "/description.xlsx")
+
+  # Calculate the covariance matrix
+  covariance_matrix = df.cov()
+  logging.info(f"The covariance matrix: \n{covariance_matrix}")
+  tb.create_table(df,folder,"/covariance.xlsx")
+
   logging.info(f"Writing cleared data result into excel.")
-  tb.create_table(df,folder,"/cleared.xlsx")
+  tb.create_table(df,folder,"/cleared.xlsx",False)
   logging.info("EDA - Exploratory data analysis finished.")

@@ -8,7 +8,8 @@ import logging
 def main():
   # Create ArgumentParser object
   parser = argparse.ArgumentParser(
-    description="Example script with command-line arguments")
+    description="This is an electric power prediction application "
+                "with different regression technics. ")
 
   # Add arguments
   parser.add_argument('folder', type=str, help='Output result folder path.')
@@ -18,22 +19,24 @@ def main():
   # Parse arguments
   return args.folder, args.input_path
 
-def init(folder):
+def init_logger(folder):
   if not os.path.exists(folder):
     os.makedirs(folder)
 
   log_file=folder+'/output.log'
-  print(f"Log can be seen at: {log_file}")
+  print(f"Output log can be seen at: {log_file}")
   logging.basicConfig(level=logging.INFO, filename=log_file,
                       format='%(asctime)s - %(levelname)s - %(message)s')
 
 if __name__ == '__main__':
     folder,input_path = main()
     print("Electric power prediction started.")
-    init(folder)
+    init_logger(folder)
     print("EDA started.")
     eda.analyse_data(folder,input_path)
     print("Electric power prediction finished.")
+
+    exit()
 
 
 
