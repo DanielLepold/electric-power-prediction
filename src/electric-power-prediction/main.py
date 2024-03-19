@@ -1,8 +1,12 @@
 import argparse
 import os
+import sys
+sys.path.append('../')
+import pandas as pd
+import logging
 
 import eda as eda
-import logging
+from Regression import regression
 
 
 def main():
@@ -13,30 +17,52 @@ def main():
 
   # Add arguments
   parser.add_argument('folder', type=str, help='Output result folder path.')
-  parser.add_argument('input_path', type=str, help='Input file path.')
+  parser.add_argument('train_path', type=str, help='Train input file path.')
+  parser.add_argument('runt_type', type=str, help='To run an Exploratory data '
+                                                  'analysis (EDA) or Regression'
+                                                  '(REG) calculation.')
+  parser.add_argument('--test_path', type=str, help='Test input file path.')
 
-  args = parser.parse_args()
   # Parse arguments
-  return args.folder, args.input_path
+  args = parser.parse_args()
 
-def init_logger(folder):
+  return args.folder, args.train_path, args.runt_type, args.test_path
+
+
+def init_logger(folder, runt_type):
   if not os.path.exists(folder):
     os.makedirs(folder)
 
-  log_file=folder+'/output.log'
+  log_file = folder + '/output_' + runt_type + '.log'
+
+  if os.path.exists(log_file):
+    os.remove(log_file)
+
   print(f"Output log can be seen at: {log_file}")
   logging.basicConfig(level=logging.INFO, filename=log_file,
                       format='%(asctime)s - %(levelname)s - %(message)s')
 
+
 if __name__ == '__main__':
-    folder,input_path = main()
-    print("Electric power prediction started.")
-    init_logger(folder)
+  folder, train_path, run_type, test_path = main()
+  init_logger(folder, run_type)
+
+  df_train = pd.read_excel(train_path)
+
+  if run_type == 'EDA':
     print("EDA started.")
-    eda.analyse_data(folder,input_path)
-    print("Electric power prediction finished.")
+    eda.EDA_with_pycaret(df_train)
+    #eda.analyse_data(folder, df_train)
+    print("EDA finished.")
+  elif run_type == 'REG':
+    print("Regression analysis started.")
+    df_test = pd.read_excel(test_path)
+    regression.create_models(df_train, df_test,folder)
+    # Perform regression analysis
+    print("Regression analysis finished.")
+  else:
+    print("Invalid analysis type.")
+    logging.error("Invalid analysis type.")
+    exit(1)
 
-    exit()
-
-
-
+  exit()

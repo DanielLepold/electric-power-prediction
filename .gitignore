@@ -1,3 +1,7 @@
 .idea
 /src/.idea
 /src/electric-power-prediction/__pycache__/
+/src/electric-power-prediction/Regression/__pycache__
+/src/electric-power-prediction/V0/
+/src/electric-power-prediction/V1/
+/src/electric-power-prediction/mlruns/

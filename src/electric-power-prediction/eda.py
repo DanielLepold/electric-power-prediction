@@ -1,11 +1,11 @@
-import pandas as pd
 import table as tb
 import plot as pl
 import logging
 
-def analyse_data(folder,input_path):
+
+
+def analyse_data(folder,df):
   logging.info("EDA - Exploratory data analysis started.")
-  df = pd.read_excel(input_path)
 
   logging.info(f"Creating plots before data clearance at: "
                f"{folder}/Initial/Plots")
@@ -65,3 +65,5 @@ def analyse_data(folder,input_path):
   logging.info(f"Writing cleared data result into excel.")
   tb.create_table(df,folder,"/cleared.xlsx",False)
   logging.info("EDA - Exploratory data analysis finished.")
+
+
