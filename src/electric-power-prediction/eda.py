@@ -60,7 +60,7 @@ def analyse_data(folder,df):
   # Calculate the covariance matrix
   covariance_matrix = df.cov()
   logging.info(f"The covariance matrix: \n{covariance_matrix}")
-  tb.create_table(df,folder,"/covariance.xlsx")
+  tb.create_table(covariance_matrix,folder,"/covariance.xlsx")
 
   logging.info(f"Writing cleared data result into excel.")
   tb.create_table(df,folder,"/cleared.xlsx",False)

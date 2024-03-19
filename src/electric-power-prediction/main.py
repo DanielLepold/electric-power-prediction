@@ -51,14 +51,12 @@ if __name__ == '__main__':
 
   if run_type == 'EDA':
     print("EDA started.")
-    eda.EDA_with_pycaret(df_train)
-    #eda.analyse_data(folder, df_train)
+    eda.analyse_data(folder, df_train)
     print("EDA finished.")
   elif run_type == 'REG':
     print("Regression analysis started.")
     df_test = pd.read_excel(test_path)
     regression.create_models(df_train, df_test,folder)
-    # Perform regression analysis
     print("Regression analysis finished.")
   else:
     print("Invalid analysis type.")
