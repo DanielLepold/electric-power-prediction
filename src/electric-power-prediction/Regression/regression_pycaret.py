@@ -31,7 +31,11 @@ def create_model(df_train,df_test,folder):
 
   # Logging console log to the file.
   original_stdout = sys.stdout
-  log_file_path = folder_path + '/result.log'
+  log_file_path = folder_path + '/output_pycaret.log'
+
+  if os.path.exists(log_file_path):
+    os.remove(log_file_path)
+
   sys.stdout = open(log_file_path, 'a')
 
   print("-----------------------------------------")

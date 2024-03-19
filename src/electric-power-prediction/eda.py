@@ -4,7 +4,8 @@ import logging
 
 
 
-def analyse_data(folder,df):
+def analyse_data(folder_path,df):
+  folder=folder_path+"/EDA"
   logging.info("EDA - Exploratory data analysis started.")
 
   logging.info(f"Creating plots before data clearance at: "
