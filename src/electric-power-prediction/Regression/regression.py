@@ -1,12 +1,13 @@
 import logging
 import os
 import sys
-sys.path.insert(0, 'Regression')
 
 import pandas as pd
-from Regression import simple_linear_regression as slr
-from Regression import polynomial_regression as pr
-from Regression import regression_pycaret as rp
+from .linear_regression import perform_regression as linear_regression
+from .polynomial_regression import perform_regression as polynomial_regression
+from .ridge_regression import perform_regression as ridge_regression
+from .regression_pycaret import perform_regression as pycaret_regression
+
 
 
 def create_models(df_train, df_test,folder):
@@ -16,8 +17,19 @@ def create_models(df_train, df_test,folder):
   if not os.path.exists(folder_path):
     os.makedirs(folder_path)
 
-  slr.create_model(df_train, df_test, folder_path)
-  pr.create_model(df_train, df_test, folder_path)
-  rp.create_model(df_train,df_test,folder_path)
+  X_train = df_train.iloc[:,:-1]
+  y_train = df_train["PE"]
+  X_test = df_test.iloc[:, :-1]
+  y_test = df_test["PE"]
+
+  # Perform linear regression
+  linear_regression(X_train,X_test, y_train,y_test, folder_path,df_train)
+  # Perform polynomial regression
+  polynomial_regression(X_train,X_test, y_train,y_test, folder_path)
+  # Perform ridge regression
+  ridge_regression(X_train,X_test, y_train,y_test, folder_path)
+
+  # Regression calculation with pycaret
+  #pycaret_regression(df_train,df_test,folder_path)
 
   logging.info("REG - Regression model generation finished.")

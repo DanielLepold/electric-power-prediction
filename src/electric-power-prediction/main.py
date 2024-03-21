@@ -1,12 +1,11 @@
 import argparse
 import os
 import sys
-sys.path.append('../')
 import pandas as pd
 import logging
 
 import eda as eda
-from Regression import regression
+from Regression.regression import create_models
 
 
 def main():
@@ -44,6 +43,7 @@ def init_logger(folder, runt_type):
 
 
 if __name__ == '__main__':
+  sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
   folder, train_path, run_type, test_path = main()
   init_logger(folder, run_type)
 
@@ -56,7 +56,7 @@ if __name__ == '__main__':
   elif run_type == 'REG':
     print("Regression analysis started.")
     df_test = pd.read_excel(test_path)
-    regression.create_models(df_train, df_test,folder)
+    create_models(df_train, df_test,folder)
     print("Regression analysis finished.")
   else:
     print("Invalid analysis type.")
