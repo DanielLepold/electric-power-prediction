@@ -1,5 +1,4 @@
 import os
-import sys
 import logging
 import pandas as pd
 import numpy as np
@@ -8,6 +7,8 @@ import statsmodels.api as sm
 
 from sklearn.linear_model import LinearRegression
 from .base import calculate_errors
+from sklearn.model_selection import cross_val_predict
+
 
 def plot_linear_regression(reg, X_train,y_train,y_pred_train,folder,factor):
   # Get the coefficients of the linear regression model
@@ -43,6 +44,7 @@ def perform_regression(X_train,X_test, y_train,y_test, folder,df_train):
   logging.info("\n-------------------------------------------------------------"
                "--------------------------------")
   logging.info("Linear regression started.")
+  print("Linear regression started.")
 
   reg = LinearRegression()
   reg.fit(X_train, y_train)
@@ -53,7 +55,8 @@ def perform_regression(X_train,X_test, y_train,y_test, folder,df_train):
 
   logging.info(f"Reg coefficients: \n{pd.DataFrame(reg.coef_, df_train.columns[:-1], columns=['reg_coef'])}")
 
-  y_p_train = reg.predict(X_train)
+  # Perform cross-validation
+  y_p_train = cross_val_predict(reg, X_train, y_train, cv=5)
   y_p_test = reg.predict(X_test)
 
   # Calculating errors
@@ -102,8 +105,13 @@ def perform_regression(X_train,X_test, y_train,y_test, folder,df_train):
 
   logging.info("Linear regression finished.")
 
-def perform_simple_linear_regression(df_train,df_test,output_folder_path):
-  print("Linear regression started.")
+  return mae_test, mse_test, r2_test, 'Linear Regression'
+
+def perform_simple_linear_regression(df_train,df_test, folder_path):
+  logging.info("\n-------------------------------------------------------------"
+               "--------------------------------")
+  logging.info("Simple linear regression started.")
+  print("Simple linear regression started.")
   results = {}
   for factor in ['AT', 'AP', 'RH', 'V'] :
     X_train = np.array(df_train[factor])
@@ -122,10 +130,12 @@ def perform_simple_linear_regression(df_train,df_test,output_folder_path):
     # Create and fit the linear regression model
     reg = LinearRegression()
     reg.fit(X_train_reshaped, y_train)
-    y_pred_train = reg.predict(X_train_reshaped)
 
-    plot_linear_regression(reg, X_train, y_train, y_pred_train,
-                           output_folder_path,factor)
+    # Perform cross-validation
+    y_pred_train = cross_val_predict(reg, X_train_reshaped, y_train, cv=5)
+
+    plot_linear_regression(reg, X_train_reshaped, y_train, y_pred_train,
+                           folder_path,factor)
 
     # Checking the errors:
     X_test = np.array(df_test[factor])
@@ -147,11 +157,14 @@ def perform_simple_linear_regression(df_train,df_test,output_folder_path):
       f"Mean squared errors, test vs. train: \n{mse_test, mse_train}")
     logging.info(f"R2 score, test vs. train: \n{r2_test, r2_train}")
 
-    results[factor] = {'MAE': mae_test, 'MSE': mse_test, 'R2': r2_test}
+    results["SLR: "+factor] = {'MAE': mae_test, 'MSE': mse_test, 'R2': r2_test}
 
   df_results = pd.DataFrame(results).T
+  print(f"Errors: \n{df_results}")
   logging.info(f"Errors: \n{df_results}")
-  print("Linear regression finished.")
+  logging.info("Simple linear regression finished.")
+
+  return df_results.T
 
 
 

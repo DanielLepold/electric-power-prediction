@@ -7,10 +7,11 @@ from sklearn.neighbors import KNeighborsRegressor
 from sklearn.model_selection import cross_val_predict
 
 
-def perform_regression(X_train, X_test, y_train, y_test, folder):
+def perform_regression(X_train, X_test, y_train, y_test, folder,df_train):
   logging.info("\n-------------------------------------------------------------"
                "--------------------------------")
   logging.info("K neighbors regression started.")
+  print("K neighbors regression started.")
 
   neighbors = range(2, 21)  # Különböző szomszédok száma 2-től 20-ig
 
@@ -21,12 +22,12 @@ def perform_regression(X_train, X_test, y_train, y_test, folder):
     k_neighbor_reg.fit(X_train, y_train)
 
     # Cross-validation
-    y_p_train_cv = cross_val_predict(k_neighbor_reg, X_train, y_train, cv=5)
-    y_p_test_cv = cross_val_predict(k_neighbor_reg, X_test, y_test, cv=5)
+    y_p_train = cross_val_predict(k_neighbor_reg, X_train, y_train, cv=5)
+    y_p_test = k_neighbor_reg.predict(X_test)
 
     # Calculating R^2 for cross-validation
-    mae_train, mse_train, r2_train_cv = calculate_errors(y_train, y_p_train_cv)
-    mae_test, mse_test, r2_test_cv = calculate_errors(y_test, y_p_test_cv)
+    mae_train, mse_train, r2_train_cv = calculate_errors(y_train, y_p_train)
+    mae_test, mse_test, r2_test_cv = calculate_errors(y_test, y_p_test)
 
     results_n['train'].append(r2_train_cv)
     results_n['test'].append(r2_test_cv)
@@ -37,7 +38,7 @@ def perform_regression(X_train, X_test, y_train, y_test, folder):
 
 
   plt.plot(neighbors, results_n['train'], label='Train R2_CV')
-  plt.plot(neighbors, results_n['test'], label='Test R2_CV')
+  plt.plot(neighbors, results_n['test'], label='Test R2')
   plt.xlabel('Number of Neighbors')
   plt.ylabel('R^2 Score')
   plt.title('Cross-validation R^2 Score vs Number of Neighbors')
@@ -46,18 +47,17 @@ def perform_regression(X_train, X_test, y_train, y_test, folder):
   plt.show()
 
 
-  # N = 6 -nal volt a legjobb eredmeny
-  k_neighbor_reg = KNeighborsRegressor(n_neighbors=6)
+  # N = 5 -nal volt a legjobb eredmeny
+  k_neighbor_reg = KNeighborsRegressor(n_neighbors=5)
   k_neighbor_reg.fit(X_train, y_train)
 
   # Cross-validation
-  print(y_p_train_cv)
-  y_p_train_cv = cross_val_predict(k_neighbor_reg, X_train, y_train, cv=5)
-  y_p_test_cv = cross_val_predict(k_neighbor_reg, X_test, y_test, cv=5)
+  y_p_train = cross_val_predict(k_neighbor_reg, X_train, y_train, cv=5)
+  y_p_test = k_neighbor_reg.predict(X_test)
 
   # Calculating R^2 for cross-validation
-  mae_train, mse_train, r2_train = calculate_errors(y_train, y_p_train_cv)
-  mae_test, mse_test, r2_test = calculate_errors(y_test, y_p_test_cv)
+  mae_train, mse_train, r2_train = calculate_errors(y_train, y_p_train)
+  mae_test, mse_test, r2_test = calculate_errors(y_test, y_p_test)
 
   results = {}
   results["train"] = {'MAE': mae_train, 'MSE': mse_train,
@@ -70,7 +70,7 @@ def perform_regression(X_train, X_test, y_train, y_test, folder):
   logging.info(f"Errors: \n{df_results}")
 
   # Scatter plot for test vs prediction
-  plt.scatter(y_test, y_p_test_cv)
+  plt.scatter(y_test, y_p_test)
   plt.axline((420, 420), (500, 500), color='black', linewidth=1)
   plt.xlabel("y_test")
   plt.ylabel('y_p_test')
@@ -78,5 +78,7 @@ def perform_regression(X_train, X_test, y_train, y_test, folder):
   plt.show()
 
   logging.info("K neighbors regression finished.")
+
+  return mae_test, mse_test, r2_test, 'K Neighbors Regressor'
 
 

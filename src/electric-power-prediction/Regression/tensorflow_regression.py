@@ -11,6 +11,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from keras.layers import Dense
 from keras import Sequential, Input
+from .base import calculate_errors
 
 def relu(x):
   """
@@ -44,8 +45,8 @@ def plot_loss(history,save_path):
   plt.grid(True)
   plt.savefig(save_path)  # Save the plot to a file
   plt.close()
-def perform_regression(X_train,X_test, y_train,y_test, folder_path):
-  folder = folder_path + "/Tensorflow"
+def perform_regression(X_train,X_test, y_train,y_test, folder_path,df_train):
+  print("Tensorflow regression started.")
   # Logging console log to the file.
   original_stdout = sys.stdout
   log_file_path ='output_tensorflow.log'
@@ -57,8 +58,6 @@ def perform_regression(X_train,X_test, y_train,y_test, folder_path):
   print("\n-------------------------------------------------------------"
                "--------------------------------")
   print("Tensorflow regression started.")
-
-
 
   scaler = StandardScaler()
   X_train_sc = scaler.fit_transform(X_train)
@@ -99,7 +98,18 @@ def perform_regression(X_train,X_test, y_train,y_test, folder_path):
 
   model.evaluate(X_test_sc, y_test_sc)
 
+  y_predict_train = model.predict(X_train_sc)
   nn_predict = model.predict(X_test_sc)
+
+  mae_train, mse_train, r2_train = calculate_errors(y_train, y_predict_train)
+  mae_test, mse_test, r2_test = calculate_errors(y_test, nn_predict)
+
+  results = {}
+  results["train"] = {'MAE': mae_train, 'MSE': mse_train, 'R2': r2_train}
+  results["test"] = {'MAE': mae_test, 'MSE': mse_test, 'R2': r2_test}
+
+  df_results = pd.DataFrame(results).T
+  print(f"Errors: \n{df_results}")
 
   plt.scatter(y_test_sc, nn_predict)
   plt.savefig('nn_prediction.png')
@@ -145,6 +155,8 @@ def perform_regression(X_train,X_test, y_train,y_test, folder_path):
   print("Tensorflow regression finished.")
   # Adjusting back the console output.
   sys.stdout = original_stdout
+
+  return mae_test, mse_test, r2_test, 'Tensorflow Regression'
 
 
 

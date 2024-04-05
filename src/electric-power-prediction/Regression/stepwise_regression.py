@@ -7,12 +7,15 @@ import statsmodels.api as sm
 from sklearn.linear_model import LinearRegression
 from sklearn.feature_selection import SequentialFeatureSelector
 from .base import calculate_errors
+from sklearn.model_selection import cross_val_predict
 
 
-def perform_regression(X_train,X_test, y_train,y_test, folder):
+
+def perform_regression(X_train,X_test, y_train,y_test, folder,df_train):
   logging.info("\n-------------------------------------------------------------"
                "--------------------------------")
   logging.info("Stepwise regression started.")
+  print("Stepwise regression started.")
 
   sfs = SequentialFeatureSelector(estimator=LinearRegression(),
                                   n_features_to_select='auto', scoring='r2',
@@ -25,7 +28,7 @@ def perform_regression(X_train,X_test, y_train,y_test, folder):
   reg = LinearRegression()
   reg.fit(X_train_selected, y_train)
 
-  y_p_train = reg.predict(X_train_selected)
+  y_p_train = cross_val_predict(reg, X_train_selected, y_train, cv=5)
   y_p_test = reg.predict(X_test_selected)
 
   # Calculating errors
@@ -75,4 +78,5 @@ def perform_regression(X_train,X_test, y_train,y_test, folder):
   logging.info("Stepwise regression finished.")
 
   # logging.info(f"X column support: \n{X_train.columns[sfs.get_support()]}")
+  return mae_test, mse_test, r2_test, 'Sequential Feature Selector'
 

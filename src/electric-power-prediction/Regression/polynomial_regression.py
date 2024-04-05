@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import statsmodels.api as sm
 from sklearn.model_selection import KFold
 from sklearn.linear_model import Lasso
+from sklearn.model_selection import cross_val_predict
 
 
 from sklearn.linear_model import LinearRegression
@@ -14,10 +15,11 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 from .base import calculate_errors
 
-def perform_regression(X_train,X_test, y_train,y_test, folder):
+def perform_regression(X_train,X_test, y_train,y_test, folder,df_train):
   logging.info("\n-------------------------------------------------------------"
                "--------------------------------")
   logging.info("Polynomial regression started.")
+  print("Polynomial regression started.")
 
   poly_reg = PolynomialFeatures(degree=2, interaction_only=False)
 
@@ -26,6 +28,7 @@ def perform_regression(X_train,X_test, y_train,y_test, folder):
   # The fit_transform method should only be called on the training data
   # (X_train), not on the test data as well. Test data should only be
   # transformed based on the pre-determined polynomial features.
+  # IF there are small differences in the scatter plot, than it is ok.
   X_poly_train = poly_reg.fit_transform(X_train)
   X_poly_test= poly_reg.transform(X_test)
   y_poly_train = y_train
@@ -44,7 +47,8 @@ def perform_regression(X_train,X_test, y_train,y_test, folder):
   logging.info(
     f"Reg coefficients: \n{pd.DataFrame(reg_pol.coef_, poly_reg.get_feature_names_out(), columns=['reg_coef'])}")
 
-  y_p_train = reg_pol.predict(X_poly_train)
+  # Perform cross-validation
+  y_p_train = cross_val_predict(reg_pol, X_poly_train, y_poly_train, cv=5)
   y_p_test = reg_pol.predict(X_poly_test)
 
   # Calculating errors
@@ -113,3 +117,5 @@ def perform_regression(X_train,X_test, y_train,y_test, folder):
   plt.show()
 
   logging.info("Polynomial regression finished.")
+
+  return mae_test, mse_test, r2_test, 'Polynomial Regression'

@@ -78,28 +78,19 @@ def grid_analysis(X_train, X_test, y_train, y_test, folder):
 
   logging.info("Random forest regression finished.")
 
-def perform_regression(X_train, X_test, y_train, y_test, folder):
+def perform_regression(X_train, X_test, y_train, y_test, folder,df_train):
   logging.info("\n-------------------------------------------------------------"
                "--------------------------------")
   logging.info("Random forest regression started.")
+  print("Random forest regression started.")
 
   random_reg = RandomForestRegressor(n_estimators=100, max_depth=None,
                                      random_state=42)
   random_reg.fit(X_train, y_train)
 
   # Cross-validation
-  y_p_train_cv = cross_val_predict(random_reg, X_train, y_train,
+  y_p_train = cross_val_predict(random_reg, X_train, y_train,
                                    cv=5)  # K=5 cross-validation
-  y_p_test_cv = cross_val_predict(random_reg, X_test, y_test,
-                                  cv=5)  # K=5 cross-validation
-
-  # Calculating errors for cross-validation
-  mae_cv_train, mse_cv_train, r2_cv_train = calculate_errors(y_train,
-                                                             y_p_train_cv)
-  mae_cv_test, mse_cv_test, r2_cv_test = calculate_errors(y_test, y_p_test_cv)
-
-  # Calculating errors for train and test sets
-  y_p_train = random_reg.predict(X_train)
   y_p_test = random_reg.predict(X_test)
 
   # Calculating errors for train and test sets
@@ -107,12 +98,8 @@ def perform_regression(X_train, X_test, y_train, y_test, folder):
   mae_test, mse_test, r2_test = calculate_errors(y_test, y_p_test)
 
   results = {}
-  results["train"] = {'MAE': mae_train, 'MSE': mse_train, 'R2': r2_train,
-                      'MAE_CV': mae_cv_train, 'MSE_CV': mse_cv_train,
-                      'R2_CV': r2_cv_train}
-  results["test"] = {'MAE': mae_test, 'MSE': mse_test, 'R2': r2_test,
-                     'MAE_CV': mae_cv_test, 'MSE_CV': mse_cv_test,
-                     'R2_CV': r2_cv_test}
+  results["train"] = {'MAE': mae_train, 'MSE': mse_train, 'R2': r2_train}
+  results["test"] = {'MAE': mae_test, 'MSE': mse_test, 'R2': r2_test}
 
   df_results = pd.DataFrame(results).T
   print(df_results)
@@ -128,6 +115,6 @@ def perform_regression(X_train, X_test, y_train, y_test, folder):
 
   logging.info("Random forest regression finished.")
 
-  return mae_cv_test, mse_cv_test, r2_cv_test
+  return mae_test, mse_test, r2_test, 'Random Forest Regressor'
 
 
