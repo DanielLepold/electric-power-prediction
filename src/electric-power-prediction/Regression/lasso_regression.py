@@ -66,8 +66,8 @@ def perform_regression(X_train,X_test, y_train,y_test, folder,df_train):
   plt.show()
 
   alpha_array = np.linspace(0, 30, 100)
-  r2_train = []
-  r2_test = []
+  r2_train_list = []
+  r2_test_list = []
   params = []
 
 
@@ -81,11 +81,11 @@ def perform_regression(X_train,X_test, y_train,y_test, folder,df_train):
     r2_train_temp = r2_score(y_poly_train, lasso_train_predict)
     r2_test_temp = r2_score(y_poly_test, lasso_test_predict)
 
-    r2_train.append(r2_train_temp)
-    r2_test.append(r2_test_temp)
+    r2_train_list.append(r2_train_temp)
+    r2_test_list.append(r2_test_temp)
     params.append(clf.coef_)
 
-  plt.plot(alpha_array, r2_train, alpha_array, r2_test)
+  plt.plot(alpha_array, r2_train_list, alpha_array, r2_test_list)
   plt.legend(['train', 'test'])
   plt.savefig(os.path.join(folder, f'lasso_alpha_.png'))
   plt.show()

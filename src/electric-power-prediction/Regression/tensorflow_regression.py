@@ -101,8 +101,8 @@ def perform_regression(X_train,X_test, y_train,y_test, folder_path,df_train):
   y_predict_train = model.predict(X_train_sc)
   nn_predict = model.predict(X_test_sc)
 
-  mae_train, mse_train, r2_train = calculate_errors(y_train, y_predict_train)
-  mae_test, mse_test, r2_test = calculate_errors(y_test, nn_predict)
+  mae_train, mse_train, r2_train = calculate_errors(y_train_sc, y_predict_train)
+  mae_test, mse_test, r2_test = calculate_errors(y_test_sc, nn_predict)
 
   results = {}
   results["train"] = {'MAE': mae_train, 'MSE': mse_train, 'R2': r2_train}

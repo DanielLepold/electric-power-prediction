@@ -160,7 +160,6 @@ def perform_simple_linear_regression(df_train,df_test, folder_path):
     results["SLR: "+factor] = {'MAE': mae_test, 'MSE': mse_test, 'R2': r2_test}
 
   df_results = pd.DataFrame(results).T
-  print(f"Errors: \n{df_results}")
   logging.info(f"Errors: \n{df_results}")
   logging.info("Simple linear regression finished.")
 

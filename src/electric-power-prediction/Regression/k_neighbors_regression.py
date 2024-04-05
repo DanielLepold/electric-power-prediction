@@ -33,7 +33,6 @@ def perform_regression(X_train, X_test, y_train, y_test, folder,df_train):
     results_n['test'].append(r2_test_cv)
 
   df_results = pd.DataFrame(results_n).T
-  print(df_results)
   logging.info(f"Errors: \n{df_results}")
 
 
@@ -65,8 +64,6 @@ def perform_regression(X_train, X_test, y_train, y_test, folder,df_train):
   results["test"] = {'MAE': mae_test, 'MSE': mse_test, 'R2': r2_test}
 
   df_results = pd.DataFrame(results).T
-
-  print(df_results)
   logging.info(f"Errors: \n{df_results}")
 
   # Scatter plot for test vs prediction
