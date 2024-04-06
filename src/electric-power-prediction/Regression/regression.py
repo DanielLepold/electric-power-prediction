@@ -32,6 +32,7 @@ def create_models(df_train, df_test,folder):
     linear_regression,
     polynomial_regression,
     lasso_regression,
+    ridge_regression,
     stepwise_regression,
     gaussian_process_regression,
     tensorflow_regression,
