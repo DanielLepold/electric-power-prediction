@@ -9,15 +9,6 @@ thermal power plant system based on environmental factors. The app utilizes
 various regression techniques and provides insights into the relationships
 between input variables and the target variable (PE).
 
-## Usage
-
-### Requirements
-Python 3.9
-Required Python packages
-### Installation
-No installation is required. Simply clone or download the repository and run
-the Python script.
-
 ### Command Line Arguments
 The application accepts the following command line arguments:
 
